@@ -54,15 +54,15 @@ namespace AzureFileStorage
         {
             string connectionString;
             CloudStorageAccount storageAccount;
-            connectionString = "DefaultEndpointsProtocol=https;AccountName=atgeologs;AccountKey=nOL6CTcURztrP/qu31pc/PZTZffyrb+TlFNtZqaCF7fePQzGE9r6EpjcdDY8QdSYLbrxaIdT/QWcKnoxGVaQ3w==;EndpointSuffix=core.windows.net";
+            connectionString = "DefaultEndpointsProtocol=https;AccountName=<ShareReference>AccountKey=<yourKey>;EndpointSuffix=core.windows.net";
             storageAccount = CloudStorageAccount.Parse(connectionString);
             CloudFileClient fileClient = storageAccount.CreateCloudFileClient();
-            CloudFileShare share = fileClient.GetShareReference("atfilelogs");
+            CloudFileShare share = fileClient.GetShareReference("yourStoreReference");
             await share.CreateIfNotExistsAsync();
             try
             {
                 CloudFileDirectory root = share.GetRootDirectoryReference();
-                await root.GetFileReference("Jean.txt").UploadTextAsync("Este é um teste do Jean!");
+                await root.GetFileReference("MyFile.txt").UploadTextAsync("This is a test!");
 
             }
             catch (Exception ex)
