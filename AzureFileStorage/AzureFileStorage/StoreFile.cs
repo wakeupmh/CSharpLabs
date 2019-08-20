@@ -31,15 +31,15 @@ namespace AzureFileStorage
         {
             string connectionString;
             CloudStorageAccount storageAccount;
-            connectionString = "DefaultEndpointsProtocol=https;AccountName=atgeologs;AccountKey=nOL6CTcURztrP/qu31pc/PZTZffyrb+TlFNtZqaCF7fePQzGE9r6EpjcdDY8QdSYLbrxaIdT/QWcKnoxGVaQ3w==;EndpointSuffix=core.windows.net";
+            connectionString = "DefaultEndpointsProtocol=https;AccountName=<yourAccountName>;AccountKey=<yourKey>;EndpointSuffix=core.windows.net";
             storageAccount = CloudStorageAccount.Parse(connectionString);
             CloudFileClient fileClient = storageAccount.CreateCloudFileClient();
-            CloudFileShare share = fileClient.GetShareReference("atfilelogs");
+            CloudFileShare share = fileClient.GetShareReference("<yourReference>");
             await share.CreateIfNotExistsAsync();
             try
             {
                 CloudFileDirectory root = share.GetRootDirectoryReference();
-                var file = root.GetFileReference("teste.txt");
+                var file = root.GetFileReference("test.txt");
                 string oldContent;
                 if (!await file.ExistsAsync())
                 {
@@ -53,7 +53,7 @@ namespace AzureFileStorage
                         oldContent = Encoding.UTF8.GetString(memoryStream.ToArray());
                     }
                 }
-                oldContent += "Novo conteudo\n";
+                oldContent += "New Content\n";
                 using (var memoryStream = new MemoryStream())
                 {
                     memoryStream.Write(Encoding.UTF8.GetBytes(oldContent), 0, Encoding.UTF8.GetBytes(oldContent).Length);
