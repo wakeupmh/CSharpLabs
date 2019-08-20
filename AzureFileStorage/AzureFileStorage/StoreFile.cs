@@ -23,47 +23,43 @@ namespace AzureFileStorage
         [FunctionName("StoreFile")]
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequestMessage req, ILogger log)
         {
-            HttpStatusCode result;
-            string contentType;
+            await CreateFile(log);
 
-            result = HttpStatusCode.BadRequest;
-
-            contentType = req.Content.Headers?.ContentType?.MediaType;
-
-            if (contentType == "application/json")
-            {
-                string body;
-
-                body = await req.Content.ReadAsStringAsync();
-
-                if (!string.IsNullOrEmpty(body))
-                {
-                    string name;
-
-                    name = Guid.NewGuid().ToString("n");
-
-                    await CreateFile(log);
-
-                    result = HttpStatusCode.OK;
-                }
-            }
-
-            return req.CreateResponse(result, string.Empty);
+            return req.CreateResponse(HttpStatusCode.OK, string.Empty);
         }
         private async static Task CreateFile(ILogger log)
         {
             string connectionString;
             CloudStorageAccount storageAccount;
-            connectionString = "DefaultEndpointsProtocol=https;AccountName=<ShareReference>AccountKey=<yourKey>;EndpointSuffix=core.windows.net";
+            connectionString = "DefaultEndpointsProtocol=https;AccountName=atgeologs;AccountKey=nOL6CTcURztrP/qu31pc/PZTZffyrb+TlFNtZqaCF7fePQzGE9r6EpjcdDY8QdSYLbrxaIdT/QWcKnoxGVaQ3w==;EndpointSuffix=core.windows.net";
             storageAccount = CloudStorageAccount.Parse(connectionString);
             CloudFileClient fileClient = storageAccount.CreateCloudFileClient();
-            CloudFileShare share = fileClient.GetShareReference("yourStoreReference");
+            CloudFileShare share = fileClient.GetShareReference("atfilelogs");
             await share.CreateIfNotExistsAsync();
             try
             {
                 CloudFileDirectory root = share.GetRootDirectoryReference();
-                await root.GetFileReference("MyFile.txt").UploadTextAsync("This is a test!");
-
+                var file = root.GetFileReference("teste.txt");
+                string oldContent;
+                if (!await file.ExistsAsync())
+                {
+                    oldContent = "";
+                }
+                else
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        await file.DownloadToStreamAsync(memoryStream);
+                        oldContent = Encoding.UTF8.GetString(memoryStream.ToArray());
+                    }
+                }
+                oldContent += "Novo conteudo\n";
+                using (var memoryStream = new MemoryStream())
+                {
+                    memoryStream.Write(Encoding.UTF8.GetBytes(oldContent), 0, Encoding.UTF8.GetBytes(oldContent).Length);
+                    memoryStream.Position = 0;
+                    await file.UploadFromStreamAsync(memoryStream);
+                }
             }
             catch (Exception ex)
             {
