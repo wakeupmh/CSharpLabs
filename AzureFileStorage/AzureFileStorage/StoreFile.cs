@@ -23,7 +23,7 @@ namespace AzureFileStorage
         [FunctionName("StoreFile")]
         public async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequestMessage req, ILogger log)
         {
-            string connectionString = "DefaultEndpointsProtocol=https;AccountName=atgeologs;AccountKey=nOL6CTcURztrP/qu31pc/PZTZffyrb+TlFNtZqaCF7fePQzGE9r6EpjcdDY8QdSYLbrxaIdT/QWcKnoxGVaQ3w==;EndpointSuffix=core.windows.net";
+            string connectionString = "<yourConnectionString>";
 
             await CreateFile(connectionString);
 
